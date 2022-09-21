@@ -224,19 +224,27 @@ vector<double> DubinsManeuver2d::getCoordinatesAt(DubinsManeuver2d maneuver, dou
 {
     double noffset = offset / maneuver._rhoMin;
     vector<double> qi = { 0, 0, maneuver._qi[2] };
+    vector<double> q1, q2;
 
     double l1 = maneuver._maneuver.t;
     double l2 = maneuver._maneuver.p;
-    auto q1 = getPositionInSegment(maneuver, l1, qi, maneuver._maneuver.caseType.at(0));
-    auto q2 = getPositionInSegment(maneuver, l1, qi, maneuver._maneuver.caseType.at(1));
 
     vector<double> q;
     if (noffset < l1)
-        getPositionInSegment(maneuver, noffset, qi, maneuver._maneuver.caseType.at(0));
+    {
+        q = getPositionInSegment(maneuver, noffset, qi, maneuver._maneuver.caseType.at(0));
+    }
     else if(noffset < (l1 + l2))
-        getPositionInSegment(maneuver, noffset - l1, q1, maneuver._maneuver.caseType.at(1));
+    {
+        q1 = getPositionInSegment(maneuver, l1, qi, maneuver._maneuver.caseType.at(0));
+        q = getPositionInSegment(maneuver, noffset - l1, q1, maneuver._maneuver.caseType.at(1));
+    }
     else
-        getPositionInSegment(maneuver, noffset - l1 - l2, q2, maneuver._maneuver.caseType.at(2));
+    {
+        q1 = getPositionInSegment(maneuver, l1, qi, maneuver._maneuver.caseType.at(0));
+        q2 = getPositionInSegment(maneuver, l2, q1, maneuver._maneuver.caseType.at(1));
+        q = getPositionInSegment(maneuver, noffset - l1 - l2, q2, maneuver._maneuver.caseType.at(2));
+    }
 
     q[0] = q[0] * maneuver._rhoMin + maneuver._qi[0];
     q[1] = q[1] * maneuver._rhoMin + maneuver._qi[1];
@@ -276,7 +284,9 @@ vector<vector<double>> DubinsManeuver2d::getSamplingPoints(DubinsManeuver2d mane
     points.reserve(numPoints);
 
     for (int i = 0; i < numPoints; i++)
-        points[i] = getCoordinatesAt(maneuver, i * res);
+    {
+        points.push_back(getCoordinatesAt(maneuver, i * res));
+    }
 
     return points;
 }
