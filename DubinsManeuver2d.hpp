@@ -31,7 +31,7 @@ class DubinsManeuver2d
         DubinsStruct _maneuver;
 
         DubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin);
-        static DubinsManeuver2d createDubinsManeuver2D(vector<double> qi, vector<double> qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
+        static DubinsManeuver2d createDubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
         static vector<double> getCoordinatesAt(DubinsManeuver2d maneuver, double offset);
         static vector<double> getPositionInSegment(DubinsManeuver2d maneuver, double offset, vector<double> qi, char caseType);
         static vector<vector<double>> getSamplingPoints(DubinsManeuver2d maneuver, double res = 0.1);

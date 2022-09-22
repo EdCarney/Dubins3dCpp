@@ -136,7 +136,7 @@ DubinsManeuver2d::DubinsManeuver2d(vector<double> qi, vector<double> qf, double 
     _maneuver = DubinsStruct {0, 0, 0, INFINITY, ""};
 }
 
-DubinsManeuver2d DubinsManeuver2d::createDubinsManeuver2D(vector<double> qi, vector<double> qf, double rhoMin, double minLength, bool disableCCC)
+DubinsManeuver2d DubinsManeuver2d::createDubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin, double minLength, bool disableCCC)
 {
     auto maneuver = DubinsManeuver2d(qi, qf, rhoMin);
 
