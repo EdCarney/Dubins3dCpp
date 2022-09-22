@@ -1,6 +1,7 @@
 #include <math.h>
 #include <string>
 #include <vector>
+#include "Utility.hpp"
 
 using namespace std;
 
@@ -15,7 +16,6 @@ struct DubinsStruct
 
 class DubinsManeuver2d
 {
-    static double _mod2pi(double val);
     static DubinsStruct _lsl(DubinsManeuver2d maneuver, double a, double b, double d, double sa, double ca, double sb, double cb);
     static DubinsStruct _rsr(DubinsManeuver2d maneuver, double a, double b, double d, double sa, double ca, double sb, double cb);
     static DubinsStruct _lsr(DubinsManeuver2d maneuver, double a, double b, double d, double sa, double ca, double sb, double cb);

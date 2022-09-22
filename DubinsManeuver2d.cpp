@@ -1,20 +1,13 @@
 #include "DubinsManeuver2d.hpp"
 
-double DubinsManeuver2d::_mod2pi(double val)
-{
-    double modVal = 2 * M_PI;
-    int num = (int)floor(val / modVal);
-    return val - num * modVal;
-}
-
 DubinsStruct DubinsManeuver2d::_lsl(DubinsManeuver2d maneuver, double a, double b, double d, double sa, double ca, double sb, double cb)
 {
     double aux, t, p, q, length;
     string caseType;
     aux = atan2(cb - ca, d + sa - sb);
-    t = _mod2pi(-a + aux);
+    t = Utility::mod2pi(-a + aux);
     p = sqrt(2 + d*d - 2*cos(a - b) + 2*d*(sa - sb));
-    q =_mod2pi(b - aux);
+    q = Utility::mod2pi(b - aux);
     length = (t + p + q) * maneuver._rhoMin;
     caseType = "LSL";
     return DubinsStruct {t, p, q, length, caseType};
@@ -25,9 +18,9 @@ DubinsStruct DubinsManeuver2d::_rsr(DubinsManeuver2d maneuver, double a, double 
     double aux, t, p, q, length;
     string caseType;
     aux = atan2(ca - cb, d - sa + sb);
-    t = _mod2pi(a - aux);
+    t = Utility::mod2pi(a - aux);
     p = sqrt(2 + d*d - 2*cos(a - b) + 2*d*(sb - sa));
-    q =_mod2pi(_mod2pi(-b) + aux);
+    q = Utility::mod2pi(Utility::mod2pi(-b) + aux);
     length = (t + p + q) * maneuver._rhoMin;
     caseType = "RSR";
     return DubinsStruct {t, p, q, length, caseType};
@@ -42,8 +35,8 @@ DubinsStruct DubinsManeuver2d::_lsr(DubinsManeuver2d maneuver, double a, double 
     {
         p = sqrt(aux1);
         aux2 = atan2(-ca-cb, d+sa+sb) - atan(-2/p);
-        t = _mod2pi(-a + aux2);
-        q = _mod2pi(-_mod2pi(b) + aux2);
+        t = Utility::mod2pi(-a + aux2);
+        q = Utility::mod2pi(-Utility::mod2pi(b) + aux2);
     }
     else
     {
@@ -65,8 +58,8 @@ DubinsStruct DubinsManeuver2d::_rsl(DubinsManeuver2d maneuver, double a, double 
     {
         p = sqrt(aux1);
         aux2 = atan2(ca+cb, d-sa-sb) - atan(2/p);
-        t = _mod2pi(a - aux2);
-        q = _mod2pi(_mod2pi(b) - aux2);
+        t = Utility::mod2pi(a - aux2);
+        q = Utility::mod2pi(Utility::mod2pi(b) - aux2);
     }
     else
     {
@@ -86,9 +79,9 @@ DubinsStruct DubinsManeuver2d::_rlr(DubinsManeuver2d maneuver, double a, double 
     aux = (6 - d*d + 2*cos(a-b) + 2*d*(sa-sb))/8;
     if (abs(aux) <= 1)
     {
-        p = _mod2pi(-acos(aux));
-        t = _mod2pi(a - atan2(ca-cb, d-sa+sb) + p/2);
-        q = _mod2pi(a - b - t + p);
+        p = Utility::mod2pi(-acos(aux));
+        t = Utility::mod2pi(a - atan2(ca-cb, d-sa+sb) + p/2);
+        q = Utility::mod2pi(a - b - t + p);
     }
     else
     {
@@ -108,9 +101,9 @@ DubinsStruct DubinsManeuver2d::_lrl(DubinsManeuver2d maneuver, double a, double 
     aux = (6 - d*d + 2*cos(a-b) + 2*d*(-sa+sb))/8;;
     if (abs(aux) <= 1)
     {
-        p = _mod2pi(-acos(aux));
-        t = _mod2pi(-a + atan2(-ca+cb, d+sa-sb) + p/2);
-        q = _mod2pi(b - a - t + p);
+        p = Utility::mod2pi(-acos(aux));
+        t = Utility::mod2pi(-a + atan2(-ca+cb, d+sa-sb) + p/2);
+        q = Utility::mod2pi(b - a - t + p);
     }
     else
     {
@@ -157,9 +150,9 @@ DubinsManeuver2d DubinsManeuver2d::createDubinsManeuver2D(vector<double> qi, vec
 
     double d = D / maneuver._rhoMin;
 
-    double rotationAngle = _mod2pi(atan2(dy, dx));
-    double a = _mod2pi(maneuver._qi[2] - rotationAngle);
-    double b = _mod2pi(maneuver._qf[2] - rotationAngle);
+    double rotationAngle = Utility::mod2pi(atan2(dy, dx));
+    double a = Utility::mod2pi(maneuver._qi[2] - rotationAngle);
+    double b = Utility::mod2pi(maneuver._qf[2] - rotationAngle);
 
     double sa = sin(a);
     double ca = cos(a);
@@ -248,7 +241,7 @@ vector<double> DubinsManeuver2d::getCoordinatesAt(DubinsManeuver2d maneuver, dou
 
     q[0] = q[0] * maneuver._rhoMin + maneuver._qi[0];
     q[1] = q[1] * maneuver._rhoMin + maneuver._qi[1];
-    q[2] = _mod2pi(q[2]);
+    q[2] = Utility::mod2pi(q[2]);
 
     return q;
 }
