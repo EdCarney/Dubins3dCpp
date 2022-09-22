@@ -1,24 +1,5 @@
 #include "DubinsManeuver3d.hpp"
 
-vector<vector<double>> DubinsManeuver3d::_computeSampling(DubinsManeuver3d maneuver, int numSamples)
-{
-    auto Dlat = maneuver._path.at(0);
-    auto Dlon = maneuver._path.at(1);
-
-    vector<vector<double>> points(numSamples);
-    double offsetLon, sampleLen = Dlon._maneuver.length / numSamples;
-
-    for (int i = 0; i < numSamples; ++i)
-    {
-        offsetLon = sampleLen * i;
-        auto qSZ = DubinsManeuver2d::getCoordinatesAt(Dlon, offsetLon);
-        auto qXY = DubinsManeuver2d::getCoordinatesAt(Dlat, qSZ.at(0));
-        points.push_back(vector<double> { qXY.at(0), qXY.at(1), qSZ.at(1), qXY.at(2), qSZ.at(2) });
-    }
-
-    return points;
-}
-
 vector<DubinsManeuver2d> DubinsManeuver3d::_tryToConstruct(DubinsManeuver3d maneuver, double horizontalRadius)
 {
     vector<double> qi2d = { maneuver._qi.at(0), maneuver._qi.at(1), maneuver._qi.at(3) };
@@ -187,4 +168,24 @@ DubinsManeuver3d DubinsManeuver3d::createDubinsManeuver3d(vector<double> qi, vec
     maneuver._path = fb;
     maneuver._length = fb.at(1)._maneuver.length;
     return maneuver;
+}
+
+vector<vector<double>> DubinsManeuver3d::computeSampling(DubinsManeuver3d maneuver, int numSamples)
+{
+    auto Dlat = maneuver._path.at(0);
+    auto Dlon = maneuver._path.at(1);
+
+    vector<vector<double>> points(numSamples);
+    double offsetLon, sampleLen = Dlon._maneuver.length / numSamples;
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        offsetLon = sampleLen * i;
+        auto qSZ = DubinsManeuver2d::getCoordinatesAt(Dlon, offsetLon);
+        auto qXY = DubinsManeuver2d::getCoordinatesAt(Dlat, qSZ.at(0));
+        vector<double> samples = { qXY.at(0), qXY.at(1), qSZ.at(1), qXY.at(2), qSZ.at(2) };
+        copy(samples.begin(), samples.end(), back_inserter(points[i]));
+    }
+
+    return points;
 }
