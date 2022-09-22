@@ -128,21 +128,17 @@ DubinsStruct DubinsManeuver2d::_c(DubinsManeuver2d maneuver)
     return DubinsStruct {t, p, q, length, caseType};
 }
 
-DubinsManeuver2d DubinsManeuver2d::_buildBasicManeuver(vector<double> qi, vector<double> qf, double rhoMin)
+DubinsManeuver2d::DubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin)
 {
-    DubinsManeuver2d maneuver;
-    maneuver._qi = qi;
-    maneuver._qf = qf;
-    maneuver._rhoMin = rhoMin;
-    maneuver._maneuver = DubinsStruct {0, 0, 0, INFINITY, ""};
-    return maneuver;
+    _qi = qi;
+    _qf = qf;
+    _rhoMin = rhoMin;
+    _maneuver = DubinsStruct {0, 0, 0, INFINITY, ""};
 }
-
-DubinsManeuver2d::DubinsManeuver2d() { }
 
 DubinsManeuver2d DubinsManeuver2d::createDubinsManeuver2D(vector<double> qi, vector<double> qf, double rhoMin, double minLength, bool disableCCC)
 {
-    auto maneuver = _buildBasicManeuver(qi, qf, rhoMin);
+    auto maneuver = DubinsManeuver2d(qi, qf, rhoMin);
 
     double dx = maneuver._qf[0] - maneuver._qi[0];
     double dy = maneuver._qf[1] - maneuver._qi[1];

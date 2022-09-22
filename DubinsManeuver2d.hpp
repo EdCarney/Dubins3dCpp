@@ -23,7 +23,6 @@ class DubinsManeuver2d
     static DubinsStruct _rlr(DubinsManeuver2d maneuver, double a, double b, double d, double sa, double ca, double sb, double cb);
     static DubinsStruct _lrl(DubinsManeuver2d maneuver, double a, double b, double d, double sa, double ca, double sb, double cb);
     static DubinsStruct _c(DubinsManeuver2d maneuver);
-    static DubinsManeuver2d _buildBasicManeuver(vector<double> qi, vector<double> qf, double rhoMin);
 
     public:
         vector<double> _qi;
@@ -31,7 +30,7 @@ class DubinsManeuver2d
         double _rhoMin;
         DubinsStruct _maneuver;
 
-        DubinsManeuver2d();
+        DubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin);
         static DubinsManeuver2d createDubinsManeuver2D(vector<double> qi, vector<double> qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
         static vector<double> getCoordinatesAt(DubinsManeuver2d maneuver, double offset);
         static vector<double> getPositionInSegment(DubinsManeuver2d maneuver, double offset, vector<double> qi, char caseType);
