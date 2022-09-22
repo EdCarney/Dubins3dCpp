@@ -1,4 +1,10 @@
 #include <math.h>
+#include <vector>
+
+using namespace std;
+
+#ifndef H_UTILITY
+#define H_UTILITY
 
 struct Utility
 {
@@ -9,3 +15,5 @@ struct Utility
         return val - num * modVal;
     }
 };
+
+#endif //H_UTILITY
