@@ -3,3 +3,5 @@
 *.gch
 *.jl
 .vscode
+build
+path.txt
