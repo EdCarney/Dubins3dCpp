@@ -2,13 +2,13 @@
 
 vector<DubinsManeuver2d> DubinsManeuver3d::_tryToConstruct(DubinsManeuver3d maneuver, double horizontalRadius)
 {
-    State2d qi2d = { maneuver._qi.at(0), maneuver._qi.at(1), maneuver._qi.at(3) };
-    State2d qf2d = { maneuver._qf.at(0), maneuver._qf.at(1), maneuver._qf.at(3) };
+    State2d qi2d = { maneuver._qi.x, maneuver._qi.y, maneuver._qi.theta };
+    State2d qf2d = { maneuver._qf.x, maneuver._qf.y, maneuver._qf.theta };
 
     auto Dlat = DubinsManeuver2d(qi2d, qf2d, horizontalRadius);
 
-    State2d qi3d = { 0.0, maneuver._qi.at(2), maneuver._qi.at(4) };
-    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.at(2), maneuver._qf.at(4) };
+    State2d qi3d = { 0.0, maneuver._qi.z, maneuver._qi.gamma };
+    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.z, maneuver._qf.gamma };
 
     double tol = 0.00001;
     double verticalCurvature = sqrt((1.0 / pow(maneuver._rhoMin, 2)) - (1.0 / pow(horizontalRadius, 2)));
@@ -26,14 +26,14 @@ vector<DubinsManeuver2d> DubinsManeuver3d::_tryToConstruct(DubinsManeuver3d mane
 
     if (Dlon.maneuver().caseType.at(0) == 'R')
     {
-        if (maneuver._qi.at(4) - Dlon.maneuver().t < maneuver._pitchLims.at(0))
+        if (maneuver._qi.gamma - Dlon.maneuver().t < maneuver._pitchLims.at(0))
         {
             return vector<DubinsManeuver2d> { };
         }
     }
     else
     {
-        if (maneuver._qi.at(4) + Dlon.maneuver().t > maneuver._pitchLims.at(1))
+        if (maneuver._qi.gamma + Dlon.maneuver().t > maneuver._pitchLims.at(1))
         {
             return vector<DubinsManeuver2d> { };
         }
@@ -42,18 +42,18 @@ vector<DubinsManeuver2d> DubinsManeuver3d::_tryToConstruct(DubinsManeuver3d mane
     return vector<DubinsManeuver2d> { Dlat, Dlon };
 }
 
-DubinsManeuver3d DubinsManeuver3d::_getLowerBound(vector<double> qi, vector<double> qf, double rhoMin, vector<double> pitchLims)
+DubinsManeuver3d DubinsManeuver3d::_getLowerBound(State3d qi, State3d qf, double rhoMin, vector<double> pitchLims)
 {
     auto maneuver = DubinsManeuver3d(qi, qf, rhoMin, pitchLims);
 
     double spiralRadius = rhoMin * (pow(cos(max(-pitchLims.at(0), pitchLims.at(1))), 2));
 
-    State2d qi2d = { maneuver._qi.at(0), maneuver._qi.at(1), maneuver._qi.at(3) };
-    State2d qf2d = { maneuver._qf.at(0), maneuver._qf.at(1), maneuver._qf.at(3) };
+    State2d qi2d = { maneuver._qi.x, maneuver._qi.y, maneuver._qi.theta };
+    State2d qf2d = { maneuver._qf.x, maneuver._qf.y, maneuver._qf.theta };
     auto Dlat = DubinsManeuver2d(qi2d, qf2d, spiralRadius);
 
-    State2d qi3d = { 0.0, maneuver._qi.at(2), maneuver._qi.at(4) };
-    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.at(2), maneuver._qf.at(4) };
+    State2d qi3d = { 0.0, maneuver._qi.z, maneuver._qi.gamma };
+    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.z, maneuver._qf.gamma };
     auto Dlon = Vertical::createDubinsManeuver2D(qi3d, qf3d, maneuver._rhoMin, maneuver._pitchLims);
 
     if (Dlon.maneuver().caseType == "XXX")
@@ -67,16 +67,16 @@ DubinsManeuver3d DubinsManeuver3d::_getLowerBound(vector<double> qi, vector<doub
     return maneuver;
 }
 
-DubinsManeuver3d DubinsManeuver3d::_getUpperBound(vector<double> qi, vector<double> qf, double rhoMin, vector<double> pitchLims)
+DubinsManeuver3d DubinsManeuver3d::_getUpperBound(State3d qi, State3d qf, double rhoMin, vector<double> pitchLims)
 {
     auto maneuver = DubinsManeuver3d(qi, qf, rhoMin, pitchLims);
 
     double safeRadius = sqrt(2.0) * maneuver._rhoMin;
 
-    vector<double> p1 = { qi.at(0), qi.at(1) };
-    vector<double> p2 = { qf.at(0), qf.at(1) };
-    vector<double> diff = { p2.at(0) - p1.at(0), p2.at(1) - p1.at(1) };
-    double dist = hypot(diff.at(0), diff.at(1));
+    Point2d p1 = { qi.x, qi.y };
+    Point2d p2 = { qf.x, qf.y };
+    Point2d diff = p2 - p1;
+    double dist = p2.distanceTo(p1);
 
     if (dist < 4.0 * safeRadius)
     {
@@ -84,12 +84,12 @@ DubinsManeuver3d DubinsManeuver3d::_getUpperBound(vector<double> qi, vector<doub
         return maneuver;
     }
 
-    State2d qi2d = { maneuver._qi.at(0), maneuver._qi.at(1), maneuver._qi.at(3) };
-    State2d qf2d = { maneuver._qf.at(0), maneuver._qf.at(1), maneuver._qf.at(3) };
+    State2d qi2d = { maneuver._qi.x, maneuver._qi.y, maneuver._qi.theta };
+    State2d qf2d = { maneuver._qf.x, maneuver._qf.y, maneuver._qf.theta };
     auto Dlat = DubinsManeuver2d(qi2d, qf2d, safeRadius);
 
-    State2d qi3d = { 0.0, maneuver._qi.at(2), maneuver._qi.at(4) };
-    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.at(2), maneuver._qf.at(4) };
+    State2d qi3d = { 0.0, maneuver._qi.z, maneuver._qi.gamma };
+    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.z, maneuver._qf.gamma };
     auto Dlon = Vertical::createDubinsManeuver2D(qi3d, qf3d, maneuver._rhoMin, maneuver._pitchLims);
 
     if (Dlon.maneuver().caseType == "XXX")
@@ -103,7 +103,7 @@ DubinsManeuver3d DubinsManeuver3d::_getUpperBound(vector<double> qi, vector<doub
     return maneuver;
 }
 
-DubinsManeuver3d::DubinsManeuver3d(vector<double> qi, vector<double> qf, double rhoMin, vector<double> pitchLims)
+DubinsManeuver3d::DubinsManeuver3d(State3d qi, State3d qf, double rhoMin, vector<double> pitchLims)
 {
     _qi = qi;
     _qf = qf;
@@ -112,13 +112,11 @@ DubinsManeuver3d::DubinsManeuver3d(vector<double> qi, vector<double> qf, double 
     _length = -1;
 }
 
-DubinsManeuver3d DubinsManeuver3d::createDubinsManeuver3d(vector<double> qi, vector<double> qf, double rhoMin, vector<double> pitchLims)
+DubinsManeuver3d DubinsManeuver3d::createDubinsManeuver3d(State3d qi, State3d qf, double rhoMin, vector<double> pitchLims)
 {
     DubinsManeuver3d maneuver(qi, qf, rhoMin, pitchLims);
 
-    double zi = maneuver._qi.at(2);
-    double zf = maneuver._qf.at(2);
-    double dz = zf - zi;
+    double dz = qf.z - qi.z;
 
     double a = 1.0;
     double b = 1.0;
@@ -170,12 +168,12 @@ DubinsManeuver3d DubinsManeuver3d::createDubinsManeuver3d(vector<double> qi, vec
     return maneuver;
 }
 
-vector<vector<double>> DubinsManeuver3d::computeSampling(DubinsManeuver3d maneuver, int numSamples)
+vector<State3d> DubinsManeuver3d::computeSampling(DubinsManeuver3d maneuver, int numSamples)
 {
     auto Dlat = maneuver._path.at(0);
     auto Dlon = maneuver._path.at(1);
 
-    vector<vector<double>> points(numSamples);
+    vector<State3d> points(numSamples);
     double offsetLon, sampleLen = Dlon.maneuver().length / numSamples;
 
     for (int i = 0; i < numSamples; ++i)
@@ -183,8 +181,7 @@ vector<vector<double>> DubinsManeuver3d::computeSampling(DubinsManeuver3d maneuv
         offsetLon = sampleLen * i;
         auto qSZ = Dlon.getCoordinatesAt(offsetLon);
         auto qXY = Dlat.getCoordinatesAt(qSZ.x);
-        vector<double> samples = { qXY.x, qXY.y, qSZ.y, qXY.theta, qSZ.theta };
-        copy(samples.begin(), samples.end(), back_inserter(points[i]));
+        points[i] = State3d { qXY.x, qXY.y, qSZ.y, qXY.theta, qSZ.theta };
     }
 
     return points;
