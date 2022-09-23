@@ -25,12 +25,12 @@ class DubinsManeuver2d
     static DubinsStruct _c(DubinsManeuver2d maneuver);
 
     public:
+        DubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin);
         vector<double> _qi;
         vector<double> _qf;
         double _rhoMin;
         DubinsStruct _maneuver;
 
-        DubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin);
         static DubinsManeuver2d createDubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
         static vector<double> getCoordinatesAt(DubinsManeuver2d maneuver, double offset);
         static vector<double> getPositionInSegment(DubinsManeuver2d maneuver, double offset, vector<double> qi, char caseType);
