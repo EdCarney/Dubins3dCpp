@@ -2,13 +2,12 @@
 
 void DubinsManeuver2d::_generateManeuver(double minLength, bool disableCCC)
 {
-    double dx = qf().x - qi().x;
-    double dy = qf().y - qi().y;
-    double D = sqrt(dx*dx + dy*dy);
+    auto diff = qf() - qi();
+    double D = qf().distanceTo(qi());
 
     double d = D / rhoMin();
 
-    double rotationAngle = Utility::mod2pi(atan2(dy, dx));
+    double rotationAngle = Utility::mod2pi(atan2(diff.y, diff.x));
     double a = Utility::mod2pi(qi().theta - rotationAngle);
     double b = Utility::mod2pi(qf().theta - rotationAngle);
 

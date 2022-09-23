@@ -13,20 +13,19 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
     {
         double radius = maneuver.rhoMin();
 
-        vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
-        vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
+        Point2d p1 = { maneuver.qi().x, maneuver.qi().y };
+        Point2d p2 = { maneuver.qf().x, maneuver.qf().y };
 
         double c1 = radius * cos(theta1);
         double s1 = radius * sin(theta1);
         double c2 = radius * cos(theta2);
         double s2 = radius * sin(theta2);
 
-        vector<double> o1 = { p1.at(0) - s1, p1.at(1) + c1 };
-        vector<double> o2 = { p2.at(0) - s2, p2.at(1) + c2 };
-
-        vector<double> diff = { o2.at(0) - o1.at(0), o2.at(1) - o1.at(1) };
-        double centerDistance = hypot(diff.at(0), diff.at(1));
-        double centerAngle = atan2(diff.at(1), diff.at(0));
+        Point2d o1 = { p1.x - s1, p1.y + c1 };
+        Point2d o2 = { p2.x - s2, p2.y + c2 };
+        Point2d diff = o2 - o1;
+        double centerDistance = o2.distanceTo(o1);
+        double centerAngle = atan2(diff.y, diff.x);
 
         t = Utility::mod2pi(centerAngle - theta1);
         p = centerDistance / radius;
@@ -38,8 +37,8 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
         {
             t = 0;
             q = theta2 - theta1;
-            turnEndY = o2.at(1) - radius*cos(theta1);
-            diffY = turnEndY - p1.at(1);
+            turnEndY = o2.y - radius * cos(theta1);
+            diffY = turnEndY - p1.y;
             if (abs(theta1) > tol && (diffY < 0 == theta1 < 0))
             {
                 p = (diffY / sin(theta1)) / radius;
@@ -55,8 +54,8 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
         {
             t = theta2 - theta1;
             q = 0;
-            turnEndY = o1.at(1) - radius*cos(theta2);
-            diffY = p2.at(1) - turnEndY;
+            turnEndY = o1.y - radius*cos(theta2);
+            diffY = p2.y - turnEndY;
             if (abs(theta2) > tol && (diffY < 0 == theta2 < 0))
             {
                 p = (diffY / sin(theta2)) / radius;
@@ -89,20 +88,19 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
     {
         double radius = maneuver.rhoMin();
 
-        vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
-        vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
+        Point2d p1 = { maneuver.qi().x, maneuver.qi().y };
+        Point2d p2 = { maneuver.qf().x, maneuver.qf().y };
 
         double c1 = radius * cos(theta1);
         double s1 = radius * sin(theta1);
         double c2 = radius * cos(theta2);
         double s2 = radius * sin(theta2);
 
-        vector<double> o1 = { p1.at(0) + s1, p1.at(1) - c1 };
-        vector<double> o2 = { p2.at(0) + s2, p2.at(1) - c2 };
-
-        vector<double> diff = { o2.at(0) - o1.at(0), o2.at(1) - o1.at(1) };
-        double centerDistance = hypot(diff.at(0), diff.at(1));
-        double centerAngle = atan2(diff.at(1), diff.at(0));
+        Point2d o1 = { p1.x + s1, p1.y - c1 };
+        Point2d o2 = { p2.x + s2, p2.y - c2 };
+        Point2d diff = o2 - o1;
+        double centerDistance = o2.distanceTo(o1);
+        double centerAngle = atan2(diff.y, diff.x);
 
         t = Utility::mod2pi(theta1 - centerAngle);
         p = centerDistance / radius;
@@ -114,8 +112,8 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
         {
             t = 0;
             q = theta1 - theta2;
-            turnEndY = o2.at(1) + radius*cos(theta1);
-            diffY = turnEndY - p1.at(1);
+            turnEndY = o2.y + radius*cos(theta1);
+            diffY = turnEndY - p1.y;
             if (abs(theta1) > tol && (diffY < 0 == theta1 < 0))
             {
                 p = (diffY / sin(theta1)) / radius;
@@ -131,8 +129,8 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
         {
             t = theta1 - theta2;
             q = 0;
-            turnEndY = o1.at(1) + radius*cos(theta2);
-            diffY = p2.at(1) - turnEndY;
+            turnEndY = o1.y + radius*cos(theta2);
+            diffY = p2.y - turnEndY;
             if (abs(theta2) > tol && (diffY < 0 == theta2 < 0))
             {
                 p = (diffY / sin(theta2)) / radius;
@@ -157,8 +155,8 @@ DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
     double theta1 = maneuver.qi().theta;
     double theta2 = maneuver.qf().theta;
 
-    vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
-    vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
+    Point2d p1 = { maneuver.qi().x, maneuver.qi().y };
+    Point2d p2 = { maneuver.qf().x, maneuver.qf().y };
 
     double radius = maneuver.rhoMin();
 
@@ -167,16 +165,15 @@ DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
     double c2 = radius * cos(theta2);
     double s2 = radius * sin(theta2);
 
-    vector<double> o1 = { p1.at(0) - s1, p1.at(1) + c1 };
-    vector<double> o2 = { p2.at(0) + s2, p2.at(1) - c2 };
-
-    vector<double> diff = { o2.at(0) - o1.at(0), o2.at(1) - o1.at(1) };
-    double centerDistance = hypot(diff.at(0), diff.at(1));
+    Point2d o1 = { p1.x - s1, p1.y + c1 };
+    Point2d o2 = { p2.x + s2, p2.y - c2 };
+    Point2d diff = o2 - o1;
+    double centerDistance = o2.distanceTo(o1);
 
     double alpha;
     if (centerDistance < 2.0 * radius)
     {
-        diff[0] = sqrt(4.0 * radius * radius - diff.at(1) * diff.at(1));
+        diff.x = sqrt(4.0 * radius * radius - diff.y * diff.y);
         alpha = M_PI / 2.0;
     }
     else
@@ -184,7 +181,7 @@ DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
         alpha = asin(2.0 * radius / centerDistance);
     }
 
-    double centerAngle = atan2(diff.at(1), diff.at(0)) + alpha;
+    double centerAngle = atan2(diff.y, diff.x) + alpha;
 
     double t, p, q;
     if (centerAngle < pitchMax.at(1))
@@ -204,10 +201,10 @@ DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
         c2 = radius * cos(centerAngle);
         s2 = radius * sin(centerAngle);
 
-        vector<double> w1 = { o1.at(0) + s1, o1.at(1) - c1 };
-        vector<double> w2 = { o2.at(0) - s2, o2.at(1) + c2 };
+        Point2d w1 = { o1.x + s1, o1.y - c1 };
+        Point2d w2 = { o2.x - s2, o2.y + c2 };
 
-        p = ((w2.at(1) - w1.at(1)) / sin(centerAngle)) / radius;
+        p = ((w2.y - w1.y) / sin(centerAngle)) / radius;
     }
 
     double length = (t + p + q) * maneuver.rhoMin();
@@ -221,8 +218,8 @@ DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
     double theta1 = maneuver.qi().theta;
     double theta2 = maneuver.qf().theta;
 
-    vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
-    vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
+    Point2d p1 = { maneuver.qi().x, maneuver.qi().y };
+    Point2d p2 = { maneuver.qf().x, maneuver.qf().y };
 
     double radius = maneuver.rhoMin();
 
@@ -231,16 +228,16 @@ DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
     double c2 = radius * cos(theta2);
     double s2 = radius * sin(theta2);
 
-    vector<double> o1 = { p1.at(0) + s1, p1.at(1) - c1 };
-    vector<double> o2 = { p2.at(0) - s2, p2.at(1) + c2 };
+    Point2d o1 = { p1.x + s1, p1.y - c1 };
+    Point2d o2 = { p2.x - s2, p2.y + c2 };
 
-    vector<double> diff = { o2.at(0) - o1.at(0), o2.at(1) - o1.at(1) };
-    double centerDistance = hypot(diff.at(0), diff.at(1));
+    Point2d diff = o2 - o1;
+    double centerDistance = o2.distanceTo(o1);
 
     double alpha;
     if (centerDistance < 2.0 * radius)
     {
-        diff[0] = sqrt(4.0 * radius * radius - diff.at(1) * diff.at(1));
+        diff.x = sqrt(4.0 * radius * radius - diff.y * diff.y);
         alpha = M_PI / 2.0;
     }
     else
@@ -248,7 +245,7 @@ DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
         alpha = asin(2.0 * radius / centerDistance);
     }
 
-    double centerAngle = atan2(diff.at(1), diff.at(0)) - alpha;
+    double centerAngle = atan2(diff.y, diff.x) - alpha;
 
     double t, p, q;
     if (centerAngle > pitchMax.at(0))
@@ -268,10 +265,10 @@ DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
         c2 = radius * cos(centerAngle);
         s2 = radius * sin(centerAngle);
 
-        vector<double> w1 = { o1.at(0) - s1, o1.at(1) + c1 };
-        vector<double> w2 = { o2.at(0) + s2, o2.at(1) - c2 };
+        Point2d w1 = { o1.x - s1, o1.y + c1 };
+        Point2d w2 = { o2.x + s2, o2.y - c2 };
 
-        p = ((w2.at(1) - w1.at(1)) / sin(centerAngle)) / radius;
+        p = ((w2.y - w1.y) / sin(centerAngle)) / radius;
     }
 
     double length = (t + p + q) * maneuver.rhoMin();
@@ -284,13 +281,12 @@ DubinsManeuver2d Vertical::createDubinsManeuver2D(State2d qi, State2d qf, double
 {
     auto maneuver = DubinsManeuver2d(qi, qf, rhoMin);
 
-    double dx = maneuver.qf().x - maneuver.qi().x;
-    double dy = maneuver.qf().y - maneuver.qi().y;
-    double D = sqrt(dx*dx + dy*dy);
+    Point2d diff = maneuver.qf() - maneuver.qi();
+    double D = maneuver.qf().distanceTo(maneuver.qi());
 
     double d = D / maneuver.rhoMin();
 
-    double rotationAngle = Utility::mod2pi(atan2(dy, dx));
+    double rotationAngle = Utility::mod2pi(atan2(diff.y, diff.x));
     double a = Utility::mod2pi(maneuver.qi().theta - rotationAngle);
     double b = Utility::mod2pi(maneuver.qf().theta - rotationAngle);
 
