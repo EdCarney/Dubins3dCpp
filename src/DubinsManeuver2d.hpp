@@ -1,6 +1,7 @@
 #include <math.h>
 #include <string>
 #include <vector>
+#include "Geometry.hpp"
 #include "Utility.hpp"
 
 using namespace std;
@@ -17,12 +18,11 @@ struct DubinsStruct
 class DubinsManeuver2d
 {
     double _rhoMin;
-    vector<double> _qi;
-    vector<double> _qf;
+    State2d _qi, _qf;
     DubinsStruct _maneuver;
 
     void _generateManeuver(double minLength, bool disableCCC);
-    vector<double> _getPositionInSegment(double offset, vector<double> qi, char caseType) const;
+    State2d _getPositionInSegment(double offset, State2d qi, char caseType) const;
     DubinsStruct _lsl(double a, double b, double d, double sa, double ca, double sb, double cb) const;
     DubinsStruct _rsr(double a, double b, double d, double sa, double ca, double sb, double cb) const;
     DubinsStruct _lsr(double a, double b, double d, double sa, double ca, double sb, double cb) const;
@@ -33,16 +33,14 @@ class DubinsManeuver2d
 
     public:
         double rhoMin() const;
-        const vector<double>& qi() const;
-        const vector<double>& qf() const;
-        double qi(int i) const;
-        double qf(int i) const;
+        const State2d& qi() const;
+        const State2d& qf() const;
         const DubinsStruct& maneuver() const;
         void setManeuver(DubinsStruct maneuver);
 
-        vector<double> getCoordinatesAt(double offset) const;
-        vector<vector<double>> getSamplingPoints(double res = 0.1) const;
-        DubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
+        State2d getCoordinatesAt(double offset) const;
+        vector<State2d> getSamplingPoints(double res = 0.1) const;
+        DubinsManeuver2d(State2d qi, State2d qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
 };
 
 #endif //DUBINS_MANEUVER_2D

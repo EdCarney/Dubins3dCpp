@@ -16,7 +16,7 @@ class Vertical
     static DubinsStruct _rsl(DubinsManeuver2d maneuver, vector<double> pitchMax);
 
     public:
-        static DubinsManeuver2d createDubinsManeuver2D(vector<double> qi, vector<double> qf, double rhoMin, vector<double> pitchMax);
+        static DubinsManeuver2d createDubinsManeuver2D(State2d qi, State2d qf, double rhoMin, vector<double> pitchMax);
 };
 
 #endif //H_VERTICAL

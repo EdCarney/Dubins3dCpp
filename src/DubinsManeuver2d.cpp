@@ -2,15 +2,15 @@
 
 void DubinsManeuver2d::_generateManeuver(double minLength, bool disableCCC)
 {
-    double dx = qf(0) - qi(0);
-    double dy = qf(1) - qi(1);
+    double dx = qf().x - qi().x;
+    double dy = qf().y - qi().y;
     double D = sqrt(dx*dx + dy*dy);
 
     double d = D / rhoMin();
 
     double rotationAngle = Utility::mod2pi(atan2(dy, dx));
-    double a = Utility::mod2pi(qi(2) - rotationAngle);
-    double b = Utility::mod2pi(qf(2) - rotationAngle);
+    double a = Utility::mod2pi(qi().theta - rotationAngle);
+    double b = Utility::mod2pi(qf().theta - rotationAngle);
 
     double sa = sin(a);
     double ca = cos(a);
@@ -38,7 +38,7 @@ void DubinsManeuver2d::_generateManeuver(double minLength, bool disableCCC)
     double rhoCompare = rhoMin() * 0.00001;
     if (abs(d) < rhoCompare && abs(a) < rhoCompare && abs(b) < rhoCompare)
     {
-        double dist2d = max(abs(qi(0) - qf(0)), abs(qi(1) - qf(1)));
+        double dist2d = max(abs(qi().x - qf().x), abs(qi().y - qf().y));
         if (dist2d < rhoCompare)
         {
             pathC = _c();
@@ -69,25 +69,25 @@ void DubinsManeuver2d::_generateManeuver(double minLength, bool disableCCC)
     }
 }
 
-vector<double> DubinsManeuver2d::_getPositionInSegment(double offset, vector<double> qi, char caseType) const
+State2d DubinsManeuver2d::_getPositionInSegment(double offset, State2d qi, char caseType) const
 {
-    vector<double> q = { 0, 0, 0 };
+    State2d q = { 0, 0, 0 };
     switch (caseType)
     {
         case 'L':
-            q[0] = qi[0] + sin(qi[2]+offset) - sin(qi[2]);
-            q[1] = qi[1] - cos(qi[2]+offset) + cos(qi[2]);
-            q[2] = qi[2] + offset;
+            q.x = qi.x + sin(qi.theta + offset) - sin(qi.theta);
+            q.y = qi.y - cos(qi.theta + offset) + cos(qi.theta);
+            q.theta = qi.theta + offset;
             break;
         case 'R':
-            q[0] = qi[0] - sin(qi[2]-offset) + sin(qi[2]);
-            q[1] = qi[1] + cos(qi[2]-offset) - cos(qi[2]);
-            q[2] = qi[2] - offset;
+            q.x = qi.x - sin(qi.theta - offset) + sin(qi.theta);
+            q.y = qi.y + cos(qi.theta - offset) - cos(qi.theta);
+            q.theta = qi.theta - offset;
             break;
         case 'S':
-            q[0] = qi[0] + cos(qi[2]) * offset;
-            q[1] = qi[1] + sin(qi[2]) * offset;
-            q[2] = qi[2];
+            q.x = qi.x + cos(qi.theta) * offset;
+            q.y = qi.y + sin(qi.theta) * offset;
+            q.theta = qi.theta;
             break;
     }
     return q;
@@ -223,19 +223,15 @@ DubinsStruct DubinsManeuver2d::_c() const
 
 double DubinsManeuver2d::rhoMin() const { return _rhoMin; }
 
-const vector<double>& DubinsManeuver2d::qi() const { return _qi; }
+const State2d& DubinsManeuver2d::qi() const { return _qi; }
 
-const vector<double>& DubinsManeuver2d::qf() const { return _qf; }
-
-double DubinsManeuver2d::qi(int i) const { return _qi.at(i); }
-
-double DubinsManeuver2d::qf(int i) const { return _qf.at(i); }
+const State2d& DubinsManeuver2d::qf() const { return _qf; }
 
 const DubinsStruct& DubinsManeuver2d::maneuver() const { return _maneuver; }
 
 void DubinsManeuver2d::setManeuver(DubinsStruct maneuver) { _maneuver = maneuver; }
 
-DubinsManeuver2d::DubinsManeuver2d(vector<double> qi, vector<double> qf, double rhoMin, double minLength, bool disableCCC)
+DubinsManeuver2d::DubinsManeuver2d(State2d qi, State2d qf, double rhoMin, double minLength, bool disableCCC)
 {
     _qi = qi;
     _qf = qf;
@@ -244,16 +240,15 @@ DubinsManeuver2d::DubinsManeuver2d(vector<double> qi, vector<double> qf, double 
     _generateManeuver(minLength, disableCCC);
 }
 
-vector<double> DubinsManeuver2d::getCoordinatesAt(double offset) const
+State2d DubinsManeuver2d::getCoordinatesAt(double offset) const
 {
     double noffset = offset / rhoMin();
-    vector<double> qir = { 0, 0, qi(2) };
-    vector<double> q1, q2;
+    State2d qir = { 0, 0, qi().theta };
+    State2d q, q1, q2;
 
     double l1 = maneuver().t;
     double l2 = maneuver().p;
 
-    vector<double> q;
     if (noffset < l1)
     {
         q = _getPositionInSegment(noffset, qir, maneuver().caseType.at(0));
@@ -270,17 +265,17 @@ vector<double> DubinsManeuver2d::getCoordinatesAt(double offset) const
         q = _getPositionInSegment(noffset - l1 - l2, q2, maneuver().caseType.at(2));
     }
 
-    q[0] = q[0] * rhoMin() + qi(0);
-    q[1] = q[1] * rhoMin() + qi(1);
-    q[2] = Utility::mod2pi(q[2]);
+    q.x = q.x * rhoMin() + qi().x;
+    q.y = q.y * rhoMin() + qi().y;
+    q.theta = Utility::mod2pi(q.theta);
 
     return q;
 }
 
-vector<vector<double>> DubinsManeuver2d::getSamplingPoints(double res) const
+vector<State2d> DubinsManeuver2d::getSamplingPoints(double res) const
 {
     int numPoints = (int)floor(maneuver().length / res) + 1;
-    vector<vector<double>> points;
+    vector<State2d> points;
     points.reserve(numPoints);
 
     for (int i = 0; i < numPoints; i++)

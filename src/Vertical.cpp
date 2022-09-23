@@ -2,8 +2,8 @@
 
 DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
 {
-    double theta1 = maneuver.qi(2);
-    double theta2 = maneuver.qf(2);
+    double theta1 = maneuver.qi().theta;
+    double theta2 = maneuver.qf().theta;
 
     double t = INFINITY;
     double p = INFINITY;
@@ -13,8 +13,8 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
     {
         double radius = maneuver.rhoMin();
 
-        vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
-        vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
+        vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
+        vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
 
         double c1 = radius * cos(theta1);
         double s1 = radius * sin(theta1);
@@ -78,8 +78,8 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
 
 DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
 {
-    double theta1 = maneuver.qi(2);
-    double theta2 = maneuver.qf(2);
+    double theta1 = maneuver.qi().theta;
+    double theta2 = maneuver.qf().theta;
 
     double t = INFINITY;
     double p = INFINITY;
@@ -89,8 +89,8 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
     {
         double radius = maneuver.rhoMin();
 
-        vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
-        vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
+        vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
+        vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
 
         double c1 = radius * cos(theta1);
         double s1 = radius * sin(theta1);
@@ -154,11 +154,11 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
 
 DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
 {
-    double theta1 = maneuver.qi(2);
-    double theta2 = maneuver.qf(2);
+    double theta1 = maneuver.qi().theta;
+    double theta2 = maneuver.qf().theta;
 
-    vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
-    vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
+    vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
+    vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
 
     double radius = maneuver.rhoMin();
 
@@ -218,11 +218,11 @@ DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
 
 DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
 {
-    double theta1 = maneuver.qi(2);
-    double theta2 = maneuver.qf(2);
+    double theta1 = maneuver.qi().theta;
+    double theta2 = maneuver.qf().theta;
 
-    vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
-    vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
+    vector<double> p1 = { maneuver.qi().x, maneuver.qi().y };
+    vector<double> p2 = { maneuver.qf().x, maneuver.qf().y };
 
     double radius = maneuver.rhoMin();
 
@@ -280,19 +280,19 @@ DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
     return DubinsStruct { t, p, q, length, caseType };
 }
 
-DubinsManeuver2d Vertical::createDubinsManeuver2D(vector<double> qi, vector<double> qf, double rhoMin, vector<double> pitchMax)
+DubinsManeuver2d Vertical::createDubinsManeuver2D(State2d qi, State2d qf, double rhoMin, vector<double> pitchMax)
 {
     auto maneuver = DubinsManeuver2d(qi, qf, rhoMin);
 
-    double dx = maneuver.qf(0) - maneuver.qi(0);
-    double dy = maneuver.qf(1) - maneuver.qi(1);
+    double dx = maneuver.qf().x - maneuver.qi().x;
+    double dy = maneuver.qf().y - maneuver.qi().y;
     double D = sqrt(dx*dx + dy*dy);
 
     double d = D / maneuver.rhoMin();
 
     double rotationAngle = Utility::mod2pi(atan2(dy, dx));
-    double a = Utility::mod2pi(maneuver.qi(2) - rotationAngle);
-    double b = Utility::mod2pi(maneuver.qf(2) - rotationAngle);
+    double a = Utility::mod2pi(maneuver.qi().theta - rotationAngle);
+    double b = Utility::mod2pi(maneuver.qf().theta - rotationAngle);
 
     auto pathLSL = _lsl(maneuver);
     auto pathRSR = _rsr(maneuver);
@@ -311,7 +311,7 @@ DubinsManeuver2d Vertical::createDubinsManeuver2D(vector<double> qi, vector<doub
     {
         if (abs(p.t) < M_PI && abs(p.q) < M_PI)
         {
-            double centerAngle = maneuver.qi(2) + (p.caseType.at(0) == 'L' ? p.t : -p.t);
+            double centerAngle = maneuver.qi().theta + (p.caseType.at(0) == 'L' ? p.t : -p.t);
             if (centerAngle > pitchMax[0] && centerAngle < pitchMax[1])
             {
                 maneuver.setManeuver(p);
