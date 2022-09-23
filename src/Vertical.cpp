@@ -2,8 +2,8 @@
 
 DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
 {
-    double theta1 = maneuver._qi[2];
-    double theta2 = maneuver._qf[2];
+    double theta1 = maneuver.qi(2);
+    double theta2 = maneuver.qf(2);
 
     double t = INFINITY;
     double p = INFINITY;
@@ -11,10 +11,10 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
 
     if (theta1 <= theta2)
     {
-        double radius = maneuver._rhoMin;
+        double radius = maneuver.rhoMin();
 
-        vector<double> p1 = { maneuver._qi.at(0), maneuver._qi.at(1) };
-        vector<double> p2 = { maneuver._qf.at(0), maneuver._qf.at(1) };
+        vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
+        vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
 
         double c1 = radius * cos(theta1);
         double s1 = radius * sin(theta1);
@@ -70,7 +70,7 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
         }
     }
 
-    double length = (t + p + q) * maneuver._rhoMin;
+    double length = (t + p + q) * maneuver.rhoMin();
     string caseType = "LSL";
 
     return DubinsStruct { t, p, q, length, caseType };
@@ -78,8 +78,8 @@ DubinsStruct Vertical::_lsl(DubinsManeuver2d maneuver)
 
 DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
 {
-    double theta1 = maneuver._qi[2];
-    double theta2 = maneuver._qf[2];
+    double theta1 = maneuver.qi(2);
+    double theta2 = maneuver.qf(2);
 
     double t = INFINITY;
     double p = INFINITY;
@@ -87,10 +87,10 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
 
     if (theta1 <= theta2)
     {
-        double radius = maneuver._rhoMin;
+        double radius = maneuver.rhoMin();
 
-        vector<double> p1 = { maneuver._qi.at(0), maneuver._qi.at(1) };
-        vector<double> p2 = { maneuver._qf.at(0), maneuver._qf.at(1) };
+        vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
+        vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
 
         double c1 = radius * cos(theta1);
         double s1 = radius * sin(theta1);
@@ -146,7 +146,7 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
         }
     }
 
-    double length = (t + p + q) * maneuver._rhoMin;
+    double length = (t + p + q) * maneuver.rhoMin();
     string caseType = "RSR";
 
     return DubinsStruct { t, p, q, length, caseType };
@@ -154,13 +154,13 @@ DubinsStruct Vertical::_rsr(DubinsManeuver2d maneuver)
 
 DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
 {
-    double theta1 = maneuver._qi[2];
-    double theta2 = maneuver._qf[2];
+    double theta1 = maneuver.qi(2);
+    double theta2 = maneuver.qf(2);
 
-    vector<double> p1 = { maneuver._qi.at(0), maneuver._qi.at(1) };
-    vector<double> p2 = { maneuver._qf.at(0), maneuver._qf.at(1) };
+    vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
+    vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
 
-    double radius = maneuver._rhoMin;
+    double radius = maneuver.rhoMin();
 
     double c1 = radius * cos(theta1);
     double s1 = radius * sin(theta1);
@@ -210,7 +210,7 @@ DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
         p = ((w2.at(1) - w1.at(1)) / sin(centerAngle)) / radius;
     }
 
-    double length = (t + p + q) * maneuver._rhoMin;
+    double length = (t + p + q) * maneuver.rhoMin();
     string caseType = "LSR";
 
     return DubinsStruct { t, p, q, length, caseType };
@@ -218,13 +218,13 @@ DubinsStruct Vertical::_lsr(DubinsManeuver2d maneuver, vector<double> pitchMax)
 
 DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
 {
-    double theta1 = maneuver._qi[2];
-    double theta2 = maneuver._qf[2];
+    double theta1 = maneuver.qi(2);
+    double theta2 = maneuver.qf(2);
 
-    vector<double> p1 = { maneuver._qi.at(0), maneuver._qi.at(1) };
-    vector<double> p2 = { maneuver._qf.at(0), maneuver._qf.at(1) };
+    vector<double> p1 = { maneuver.qi().at(0), maneuver.qi().at(1) };
+    vector<double> p2 = { maneuver.qf().at(0), maneuver.qf().at(1) };
 
-    double radius = maneuver._rhoMin;
+    double radius = maneuver.rhoMin();
 
     double c1 = radius * cos(theta1);
     double s1 = radius * sin(theta1);
@@ -274,7 +274,7 @@ DubinsStruct Vertical::_rsl(DubinsManeuver2d maneuver, vector<double> pitchMax)
         p = ((w2.at(1) - w1.at(1)) / sin(centerAngle)) / radius;
     }
 
-    double length = (t + p + q) * maneuver._rhoMin;
+    double length = (t + p + q) * maneuver.rhoMin();
     string caseType = "RSL";
 
     return DubinsStruct { t, p, q, length, caseType };
@@ -284,15 +284,15 @@ DubinsManeuver2d Vertical::createDubinsManeuver2D(vector<double> qi, vector<doub
 {
     auto maneuver = DubinsManeuver2d(qi, qf, rhoMin);
 
-    double dx = maneuver._qf[0] - maneuver._qi[0];
-    double dy = maneuver._qf[1] - maneuver._qi[1];
+    double dx = maneuver.qf(0) - maneuver.qi(0);
+    double dy = maneuver.qf(1) - maneuver.qi(1);
     double D = sqrt(dx*dx + dy*dy);
 
-    double d = D / maneuver._rhoMin;
+    double d = D / maneuver.rhoMin();
 
     double rotationAngle = Utility::mod2pi(atan2(dy, dx));
-    double a = Utility::mod2pi(maneuver._qi[2] - rotationAngle);
-    double b = Utility::mod2pi(maneuver._qf[2] - rotationAngle);
+    double a = Utility::mod2pi(maneuver.qi(2) - rotationAngle);
+    double b = Utility::mod2pi(maneuver.qf(2) - rotationAngle);
 
     auto pathLSL = _lsl(maneuver);
     auto pathRSR = _rsr(maneuver);
@@ -311,10 +311,10 @@ DubinsManeuver2d Vertical::createDubinsManeuver2D(vector<double> qi, vector<doub
     {
         if (abs(p.t) < M_PI && abs(p.q) < M_PI)
         {
-            double centerAngle = maneuver._qi[2] + (p.caseType.at(0) == 'L' ? p.t : -p.t);
+            double centerAngle = maneuver.qi(2) + (p.caseType.at(0) == 'L' ? p.t : -p.t);
             if (centerAngle > pitchMax[0] && centerAngle < pitchMax[1])
             {
-                maneuver._maneuver = p;
+                maneuver.setManeuver(p);
                 break;
             }
         }
