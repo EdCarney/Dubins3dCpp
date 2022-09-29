@@ -3,12 +3,24 @@
 #include <vector>
 #include "Geometry.hpp"
 #include "Utility.hpp"
-#include "Vertical.hpp"
+#include "DubinsManeuver2d.hpp"
 
 using namespace std;
 
 #ifndef DUBINS_MANEUVER_3D
 #define DUBINS_MANEUVER_3D
+
+struct DubinsPath
+{
+    DubinsManeuver2d lat, lon;
+    bool isEmpty() const { return &lat != NULL && &lon != NULL; }
+
+    DubinsPath()
+    {
+        lat = *((DubinsManeuver2d*)NULL);
+        lon = *((DubinsManeuver2d*)NULL);
+    }
+};
 
 class DubinsManeuver3d
 {
@@ -19,8 +31,6 @@ class DubinsManeuver3d
 
     void _generateManeuver();
     vector<DubinsManeuver2d> _tryToConstruct(double horizontalRadius) const;
-    DubinsManeuver3d _getLowerBound(double rhoMin = 1, tuple<double, double> pitchLims = { -M_PI / 4.0, M_PI / 2.0 }) const;
-    DubinsManeuver3d _getUpperBound(double rhoMin = 1, tuple<double, double> pitchLims = { -M_PI / 4.0, M_PI / 2.0 }) const;
 
     public:
         double rhoMin() const;
@@ -33,7 +43,7 @@ class DubinsManeuver3d
         void setPath(vector<DubinsManeuver2d> path);
 
         vector<State3d> computeSampling(int numSamples = 1000) const;
-        DubinsManeuver3d(State3d qi, State3d qf, double rhoMin, tuple<double, double> pitchLims);
+        DubinsManeuver3d(const State3d& qi, const State3d& qf, double rhoMin, const tuple<double, double>& pitchLims);
 };
 
 #endif //DUBINS_MANEUVER_3D

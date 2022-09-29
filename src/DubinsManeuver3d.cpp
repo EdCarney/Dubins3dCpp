@@ -95,67 +95,6 @@ vector<DubinsManeuver2d> DubinsManeuver3d::_tryToConstruct(double horizontalRadi
     return vector<DubinsManeuver2d> { Dlat, Dlon };
 }
 
-DubinsManeuver3d DubinsManeuver3d::_getLowerBound(double rhoMin, tuple<double, double> pitchLims) const
-{
-    auto maneuver = DubinsManeuver3d(_qi, _qf, _rhoMin, _pitchLims);
-
-    double spiralRadius = rhoMin * (pow(cos(max(-minPitch(), maxPitch())), 2));
-
-    State2d qi2d = { maneuver._qi.x, maneuver._qi.y, maneuver._qi.theta };
-    State2d qf2d = { maneuver._qf.x, maneuver._qf.y, maneuver._qf.theta };
-    auto Dlat = DubinsManeuver2d(qi2d, qf2d, spiralRadius);
-
-    State2d qi3d = { 0.0, maneuver._qi.z, maneuver._qi.gamma };
-    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.z, maneuver._qf.gamma };
-    auto Dlon = Vertical::createDubinsManeuver2D(qi3d, qf3d, maneuver._rhoMin, maneuver._pitchLims);
-
-    if (Dlon.maneuver().caseType == "XXX")
-    {
-        maneuver._length = 0.0;
-        return maneuver;
-    }
-
-    maneuver._path = { Dlat, Dlon };
-    maneuver._length = Dlon.maneuver().length;
-    return maneuver;
-}
-
-DubinsManeuver3d DubinsManeuver3d::_getUpperBound(double rhoMin, tuple<double, double> pitchLims) const
-{
-    auto maneuver = DubinsManeuver3d(_qi, _qf, rhoMin, pitchLims);
-
-    double safeRadius = sqrt(2.0) * maneuver._rhoMin;
-
-    Point2d p1 = { _qi.x, _qi.y };
-    Point2d p2 = { _qf.x, _qf.y };
-    Point2d diff = p2 - p1;
-    double dist = p2.distanceTo(p1);
-
-    if (dist < 4.0 * safeRadius)
-    {
-        maneuver._length = INFINITY;
-        return maneuver;
-    }
-
-    State2d qi2d = { maneuver._qi.x, maneuver._qi.y, maneuver._qi.theta };
-    State2d qf2d = { maneuver._qf.x, maneuver._qf.y, maneuver._qf.theta };
-    auto Dlat = DubinsManeuver2d(qi2d, qf2d, safeRadius);
-
-    State2d qi3d = { 0.0, maneuver._qi.z, maneuver._qi.gamma };
-    State2d qf3d = { Dlat.maneuver().length, maneuver._qf.z, maneuver._qf.gamma };
-    auto Dlon = Vertical::createDubinsManeuver2D(qi3d, qf3d, maneuver._rhoMin, maneuver._pitchLims);
-
-    if (Dlon.maneuver().caseType == "XXX")
-    {
-        maneuver._length = INFINITY;
-        return maneuver;
-    }
-
-    maneuver._path = { Dlat, Dlon };
-    maneuver._length = Dlon.maneuver().length;
-    return maneuver;
-}
-
 double DubinsManeuver3d::rhoMin() const { return _rhoMin; }
 
 double DubinsManeuver3d::length() const { return _length; }
@@ -172,7 +111,7 @@ const vector<DubinsManeuver2d>& DubinsManeuver3d::path() const { return _path; }
 
 void DubinsManeuver3d::setPath(vector<DubinsManeuver2d> path) { _path = path; }
 
-DubinsManeuver3d::DubinsManeuver3d(State3d qi, State3d qf, double rhoMin, tuple<double, double> pitchLims)
+DubinsManeuver3d::DubinsManeuver3d(const State3d& qi, const State3d& qf, double rhoMin, const tuple<double, double>& pitchLims)
 {
     _qi = qi;
     _qf = qf;
