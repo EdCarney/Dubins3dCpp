@@ -15,6 +15,11 @@ struct DubinsStruct
     string caseType;
 };
 
+struct DubinsParams
+{
+    double a, b, d, sa, ca, sb, cb;
+};
+
 class DubinsManeuver2d
 {
     double _rhoMin;
@@ -23,12 +28,12 @@ class DubinsManeuver2d
 
     void _generateManeuver(double minLength, bool disableCCC);
     State2d _getPositionInSegment(double offset, State2d qi, char caseType) const;
-    DubinsStruct _lsl(double a, double b, double d, double sa, double ca, double sb, double cb) const;
-    DubinsStruct _rsr(double a, double b, double d, double sa, double ca, double sb, double cb) const;
-    DubinsStruct _lsr(double a, double b, double d, double sa, double ca, double sb, double cb) const;
-    DubinsStruct _rsl(double a, double b, double d, double sa, double ca, double sb, double cb) const;
-    DubinsStruct _rlr(double a, double b, double d, double sa, double ca, double sb, double cb) const;
-    DubinsStruct _lrl(double a, double b, double d, double sa, double ca, double sb, double cb) const;
+    DubinsStruct _lsl(const DubinsParams& params) const;
+    DubinsStruct _rsr(const DubinsParams& params) const;
+    DubinsStruct _lsr(const DubinsParams& params) const;
+    DubinsStruct _rsl(const DubinsParams& params) const;
+    DubinsStruct _rlr(const DubinsParams& params) const;
+    DubinsStruct _lrl(const DubinsParams& params) const;
     DubinsStruct _c() const;
 
     public:
@@ -40,7 +45,8 @@ class DubinsManeuver2d
 
         State2d getCoordinatesAt(double offset) const;
         vector<State2d> getSamplingPoints(double res = 0.1) const;
-        DubinsManeuver2d(State2d qi, State2d qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
+        DubinsManeuver2d();
+        DubinsManeuver2d(const State2d& qi, const State2d& qf, double rhoMin = 1, double minLength = -1, bool disableCCC = false);
 };
 
 #endif //DUBINS_MANEUVER_2D

@@ -16,11 +16,13 @@ void DubinsManeuver2d::_generateManeuver(double minLength, bool disableCCC)
     double sb = sin(b);
     double cb = cos(b);
 
+    DubinsParams params { a, b, d, sa, ca, sb, cb };
+
     DubinsStruct pathRLR, pathLRL, pathC;
-    DubinsStruct pathLSL = _lsl(a, b, d, sa, ca, sb, cb);
-    DubinsStruct pathRSR = _rsr(a, b, d, sa, ca, sb, cb);
-    DubinsStruct pathLSR = _lsr(a, b, d, sa, ca, sb, cb);
-    DubinsStruct pathRSL = _rsl(a, b, d, sa, ca, sb, cb);
+    DubinsStruct pathLSL = _lsl(params);
+    DubinsStruct pathRSR = _rsr(params);
+    DubinsStruct pathLSR = _lsr(params);
+    DubinsStruct pathRSL = _rsl(params);
 
     vector<DubinsStruct> paths;
     if (disableCCC)
@@ -29,8 +31,8 @@ void DubinsManeuver2d::_generateManeuver(double minLength, bool disableCCC)
     }
     else
     {
-        pathRLR = _rlr(a, b, d, sa, ca, sb, cb);
-        pathLRL = _lrl(a, b, d, sa, ca, sb, cb);
+        pathRLR = _rlr(params);
+        pathLRL = _lrl(params);
         paths = { pathLSL, pathRSR, pathLSR, pathRSL, pathRLR, pathLRL };
     }
 
@@ -92,43 +94,40 @@ State2d DubinsManeuver2d::_getPositionInSegment(double offset, State2d qi, char 
     return q;
 }
 
-DubinsStruct DubinsManeuver2d::_lsl(double a, double b, double d, double sa, double ca, double sb, double cb) const
+DubinsStruct DubinsManeuver2d::_lsl(const DubinsParams& params) const
 {
     double aux, t, p, q, length;
-    string caseType;
-    aux = atan2(cb - ca, d + sa - sb);
-    t = Utility::mod2pi(-a + aux);
-    p = sqrt(2 + d*d - 2*cos(a - b) + 2*d*(sa - sb));
-    q = Utility::mod2pi(b - aux);
+    aux = atan2(params.cb - params.ca, params.d + params.sa - params.sb);
+    t = Utility::mod2pi(-params.a + aux);
+    p = sqrt(2 + params.d*params.d - 2*cos(params.a - params.b) + 2*params.d*(params.sa - params.sb));
+    q = Utility::mod2pi(params.b - aux);
     length = (t + p + q) * rhoMin();
-    caseType = "LSL";
+    string caseType = "LSL";
     return DubinsStruct {t, p, q, length, caseType};
 }
 
-DubinsStruct DubinsManeuver2d::_rsr(double a, double b, double d, double sa, double ca, double sb, double cb) const
+DubinsStruct DubinsManeuver2d::_rsr(const DubinsParams& params) const
 {
     double aux, t, p, q, length;
-    string caseType;
-    aux = atan2(ca - cb, d - sa + sb);
-    t = Utility::mod2pi(a - aux);
-    p = sqrt(2 + d*d - 2*cos(a - b) + 2*d*(sb - sa));
-    q = Utility::mod2pi(Utility::mod2pi(-b) + aux);
+    aux = atan2(params.ca - params.cb, params.d - params.sa + params.sb);
+    t = Utility::mod2pi(params.a - aux);
+    p = sqrt(2 + params.d*params.d - 2*cos(params.a - params.b) + 2*params.d*(params.sb - params.sa));
+    q = Utility::mod2pi(Utility::mod2pi(-params.b) + aux);
     length = (t + p + q) * rhoMin();
-    caseType = "RSR";
+    string caseType = "RSR";
     return DubinsStruct {t, p, q, length, caseType};
 }
 
-DubinsStruct DubinsManeuver2d::_lsr(double a, double b, double d, double sa, double ca, double sb, double cb) const
+DubinsStruct DubinsManeuver2d::_lsr(const DubinsParams& params) const
 {
     double aux1, aux2, t, p, q, length;
-    string caseType;
-    aux1 = -2 + d*d + 2*cos(a - b) + 2*d*(sa + sb);
+    aux1 = -2 + params.d*params.d + 2*cos(params.a - params.b) + 2*params.d*(params.sa + params.sb);
     if (aux1 > 0)
     {
         p = sqrt(aux1);
-        aux2 = atan2(-ca-cb, d+sa+sb) - atan(-2/p);
-        t = Utility::mod2pi(-a + aux2);
-        q = Utility::mod2pi(-Utility::mod2pi(b) + aux2);
+        aux2 = atan2(-params.ca-params.cb, params.d+params.sa+params.sb) - atan(-2/p);
+        t = Utility::mod2pi(-params.a + aux2);
+        q = Utility::mod2pi(-Utility::mod2pi(params.b) + aux2);
     }
     else
     {
@@ -137,21 +136,20 @@ DubinsStruct DubinsManeuver2d::_lsr(double a, double b, double d, double sa, dou
         q = INFINITY;
     }
     length = (t+p+q) * rhoMin();
-    caseType = "LSR";
+    string caseType = "LSR";
     return DubinsStruct {t, p, q, length, caseType};
 }
 
-DubinsStruct DubinsManeuver2d::_rsl(double a, double b, double d, double sa, double ca, double sb, double cb) const
+DubinsStruct DubinsManeuver2d::_rsl(const DubinsParams& params) const
 {
     double aux1, aux2, t, p, q, length;
-    string caseType;
-    aux1 = d*d - 2 + 2*cos(a-b) - 2*d*(sa+sb);
+    aux1 = params.d*params.d - 2 + 2*cos(params.a-params.b) - 2*params.d*(params.sa+params.sb);
     if (aux1 > 0)
     {
         p = sqrt(aux1);
-        aux2 = atan2(ca+cb, d-sa-sb) - atan(2/p);
-        t = Utility::mod2pi(a - aux2);
-        q = Utility::mod2pi(Utility::mod2pi(b) - aux2);
+        aux2 = atan2(params.ca+params.cb, params.d-params.sa-params.sb) - atan(2/p);
+        t = Utility::mod2pi(params.a - aux2);
+        q = Utility::mod2pi(Utility::mod2pi(params.b) - aux2);
     }
     else
     {
@@ -160,20 +158,20 @@ DubinsStruct DubinsManeuver2d::_rsl(double a, double b, double d, double sa, dou
         q = INFINITY;
     }
     length = (t+p+q) * rhoMin();
-    caseType = "RSL";
+    string caseType = "RSL";
     return DubinsStruct {t, p, q, length, caseType};
 }
 
-DubinsStruct DubinsManeuver2d::_rlr(double a, double b, double d, double sa, double ca, double sb, double cb) const
+DubinsStruct DubinsManeuver2d::_rlr(const DubinsParams& params) const
 {
     double aux, t, p, q, length;
     string caseType;
-    aux = (6 - d*d + 2*cos(a-b) + 2*d*(sa-sb))/8;
+    aux = (6 - params.d*params.d + 2*cos(params.a-params.b) + 2*params.d*(params.sa-params.sb))/8;
     if (abs(aux) <= 1)
     {
         p = Utility::mod2pi(-acos(aux));
-        t = Utility::mod2pi(a - atan2(ca-cb, d-sa+sb) + p/2);
-        q = Utility::mod2pi(a - b - t + p);
+        t = Utility::mod2pi(params.a - atan2(params.ca-params.cb, params.d-params.sa+params.sb) + p/2);
+        q = Utility::mod2pi(params.a - params.b - t + p);
     }
     else
     {
@@ -186,16 +184,15 @@ DubinsStruct DubinsManeuver2d::_rlr(double a, double b, double d, double sa, dou
     return DubinsStruct {t, p, q, length, caseType};
 }
 
-DubinsStruct DubinsManeuver2d::_lrl(double a, double b, double d, double sa, double ca, double sb, double cb) const
+DubinsStruct DubinsManeuver2d::_lrl(const DubinsParams& params) const
 {
     double aux, t, p, q, length;
-    string caseType;
-    aux = (6 - d*d + 2*cos(a-b) + 2*d*(-sa+sb))/8;;
+    aux = (6 - params.d*params.d + 2*cos(params.a-params.b) + 2*params.d*(-params.sa+params.sb))/8;;
     if (abs(aux) <= 1)
     {
         p = Utility::mod2pi(-acos(aux));
-        t = Utility::mod2pi(-a + atan2(-ca+cb, d+sa-sb) + p/2);
-        q = Utility::mod2pi(b - a - t + p);
+        t = Utility::mod2pi(-params.a + atan2(-params.ca+params.cb, params.d+params.sa-params.sb) + p/2);
+        q = Utility::mod2pi(params.b - params.a - t + p);
     }
     else
     {
@@ -204,19 +201,18 @@ DubinsStruct DubinsManeuver2d::_lrl(double a, double b, double d, double sa, dou
         q = INFINITY;
     }
     length = (t+p+q) * rhoMin();
-    caseType = "LRL";
+    string caseType = "LRL";
     return DubinsStruct {t, p, q, length, caseType};
 }
 
 DubinsStruct DubinsManeuver2d::_c() const
 {
     double t, p , q, length;
-    string caseType;
     t = 0;
     p = 2*M_PI;
     q = 0;
     length = (t+p+q) * rhoMin();
-    caseType = "RRR";
+    string caseType = "RRR";
     return DubinsStruct {t, p, q, length, caseType};
 }
 
@@ -230,7 +226,9 @@ const DubinsStruct& DubinsManeuver2d::maneuver() const { return _maneuver; }
 
 void DubinsManeuver2d::setManeuver(DubinsStruct maneuver) { _maneuver = maneuver; }
 
-DubinsManeuver2d::DubinsManeuver2d(State2d qi, State2d qf, double rhoMin, double minLength, bool disableCCC)
+DubinsManeuver2d::DubinsManeuver2d() { }
+
+DubinsManeuver2d::DubinsManeuver2d(const State2d& qi, const State2d& qf, double rhoMin, double minLength, bool disableCCC)
 {
     _qi = qi;
     _qf = qf;
@@ -274,8 +272,7 @@ State2d DubinsManeuver2d::getCoordinatesAt(double offset) const
 vector<State2d> DubinsManeuver2d::getSamplingPoints(double res) const
 {
     int numPoints = (int)floor(maneuver().length / res) + 1;
-    vector<State2d> points;
-    points.reserve(numPoints);
+    vector<State2d> points(numPoints);
 
     for (int i = 0; i < numPoints; i++)
     {
