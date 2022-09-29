@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 configure_file(Dubins3d.h.in Dubins3d.h)
 
 # add libraries
-add_library(Dubins3d DubinsManeuver2d.cpp DubinsManeuver3d.cpp Vertical.cpp)
+add_library(Dubins3d DubinsManeuver2d.cpp DubinsManeuver3d.cpp)
 
 list(APPEND EXTRA_LIBS Dubins3d)
 
