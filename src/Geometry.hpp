@@ -15,10 +15,6 @@ struct Point2d
 struct Point3d
 {
     double x, y, z;
-
-    Point3d operator+(const Point3d& p) const;
-    Point3d operator-(const Point3d& p) const;
-    double distanceTo(const Point3d& p) const;
 }; 
 
 struct State2d : public Point2d
