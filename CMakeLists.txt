@@ -15,7 +15,7 @@ add_library(Dubins3d src/DubinsManeuver2d.cpp src/DubinsManeuver3d.cpp)
 list(APPEND EXTRA_LIBS Dubins3d)
 
 # add the executables
-add_executable(test src/test.cpp)
+#add_executable(test src/test.cpp)
 
 target_link_libraries(test PUBLIC ${EXTRA_LIBS})
 
