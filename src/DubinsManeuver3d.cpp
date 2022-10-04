@@ -26,6 +26,7 @@ void DubinsManeuver3d::_generateManeuver()
         if (fb.size() < 2)
         {
             // ERROR NO MANEUVER!!
+            return;
         }
     }
 
