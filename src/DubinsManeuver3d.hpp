@@ -43,6 +43,7 @@ class DubinsManeuver3d
         void setPath(vector<DubinsManeuver2d> path);
 
         vector<State3d> computeSampling(int numSamples = 1000) const;
+        DubinsManeuver3d();
         DubinsManeuver3d(const State3d& qi, const State3d& qf, double rhoMin, const tuple<double, double>& pitchLims);
 };
 

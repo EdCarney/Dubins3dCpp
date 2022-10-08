@@ -112,6 +112,11 @@ const vector<DubinsManeuver2d>& DubinsManeuver3d::path() const { return _path; }
 
 void DubinsManeuver3d::setPath(vector<DubinsManeuver2d> path) { _path = path; }
 
+DubinsManeuver3d::DubinsManeuver3d()
+{
+    _length = -1;
+}
+
 DubinsManeuver3d::DubinsManeuver3d(const State3d& qi, const State3d& qf, double rhoMin, const tuple<double, double>& pitchLims)
 {
     _qi = qi;
