@@ -4,7 +4,7 @@
 #include <cmath>
 
 struct Point2d {
-    double x, y;
+    double x = 0, y = 0;
 
     Point2d operator+(const Point2d& p) const { return Point2d { x + p.x, y + p.y }; }
     Point2d operator-(const Point2d& p) const { return Point2d { x - p.x, y - p.y }; }
@@ -12,15 +12,15 @@ struct Point2d {
 };
 
 struct Point3d {
-    double x, y, z;
+    double x = 0, y = 0, z = 0;
 }; 
 
 struct State2d : Point2d {
-    double theta;
+    double theta = 0;
 };
 
 struct State3d : Point3d {
-    double theta, gamma;
+    double theta = 0, gamma = 0;
 };
 
 #endif // GEOMETRY_H
