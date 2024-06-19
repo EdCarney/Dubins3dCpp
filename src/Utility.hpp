@@ -1,17 +1,13 @@
-#include <math.h>
-#include <vector>
-
-using namespace std;
-
 #ifndef H_UTILITY
 #define H_UTILITY
 
-struct Utility
-{
-    static double mod2pi(double val)
-    {
-        double modVal = 2 * M_PI;
-        int num = (int)floor(val / modVal);
+#include <cmath>
+#include <numbers>
+
+struct Utility {
+    static double mod2pi(const double val) {
+        constexpr double modVal = 2 * std::numbers::pi;
+        const int num = static_cast<int>(std::floor(val / modVal));
         return val - num * modVal;
     }
 };
