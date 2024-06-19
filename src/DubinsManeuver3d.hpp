@@ -1,50 +1,43 @@
-#include <math.h>
-#include <string>
+#ifndef DUBINS_MANEUVER_3D
+#define DUBINS_MANEUVER_3D
+
 #include <vector>
 #include "Geometry.hpp"
 #include "Utility.hpp"
 #include "DubinsManeuver2d.hpp"
 
-using namespace std;
-
-#ifndef DUBINS_MANEUVER_3D
-#define DUBINS_MANEUVER_3D
-
-struct DubinsPath
-{
+struct DubinsPath {
     DubinsManeuver2d lat, lon;
     bool isEmpty() const { return &lat != NULL && &lon != NULL; }
 
-    DubinsPath()
-    {
+    DubinsPath() {
         lat = *((DubinsManeuver2d*)NULL);
         lon = *((DubinsManeuver2d*)NULL);
     }
 };
 
-class DubinsManeuver3d
-{
-    double _rhoMin, _length;
+class DubinsManeuver3d {
     State3d _qi, _qf;
-    tuple<double, double> _pitchLims;
-    vector<DubinsManeuver2d> _path;
+    double _rhoMin, _length;
+    std::tuple<double, double> _pitchLims;
+    std::vector<DubinsManeuver2d> _path;
 
     void _generateManeuver();
-    vector<DubinsManeuver2d> _tryToConstruct(double horizontalRadius) const;
+    [[nodiscard]] std::vector<DubinsManeuver2d> _tryToConstruct(double horizontalRadius) const;
 
     public:
-        double rhoMin() const;
-        double length() const;
-        const State3d& qi() const;
-        const State3d& qf() const;
-        double minPitch() const;
-        double maxPitch() const;
-        const vector<DubinsManeuver2d>& path() const;
-        void setPath(vector<DubinsManeuver2d> path);
-
-        vector<State3d> computeSampling(int numSamples = 1000) const;
-        DubinsManeuver3d();
-        DubinsManeuver3d(const State3d& qi, const State3d& qf, double rhoMin, const tuple<double, double>& pitchLims);
+        DubinsManeuver3d() : _rhoMin{0}, _length{-1} { }
+        DubinsManeuver3d(const State3d& qi, const State3d& qf, const double rhoMin, const std::tuple<double, double>& pitchLims)
+            : _qi{qi}, _qf{qf}, _rhoMin{rhoMin}, _length{-1}, _pitchLims{pitchLims} { _generateManeuver(); }
+        [[nodiscard]] double rhoMin() const { return _rhoMin; }
+        [[nodiscard]] double length() const { return _length; }
+        [[nodiscard]] const State3d& qi() const { return _qi; }
+        [[nodiscard]] const State3d& qf() const { return _qf; }
+        [[nodiscard]] double minPitch() const { return std::get<0>(_pitchLims); }
+        [[nodiscard]] double maxPitch() const { return std::get<1>(_pitchLims); }
+        [[nodiscard]] const std::vector<DubinsManeuver2d>& path() const { return _path; }
+        [[nodiscard]] std::vector<State3d> computeSampling(int numSamples = 1000) const;
+        void setPath(const std::vector<DubinsManeuver2d>& path) { _path = path; }
 };
 
 #endif //DUBINS_MANEUVER_3D
